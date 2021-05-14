@@ -56,4 +56,21 @@ class OvenTest {
         callOrder.verify(fan).isOn();
         callOrder.verify(heatingModule).heater(properHeatingSettings);
     }
+
+    @Test
+    void oneProgramStageHeatingTypeSetToGrill() throws HeatingException{
+        programStages.add(ProgramStage.builder().withStageTime(100).withTargetTemp(200).withHeat(HeatType.GRILL).build());
+        bakingProgram= BakingProgram.builder().withInitialTemp(100).withStages(programStages).build();
+
+        HeatingSettings properHeatingSettings= HeatingSettings.builder()
+                .withTargetTemp(200)
+                .withTimeInMinutes(100)
+                .build();
+
+        oven.start(bakingProgram);
+        InOrder callOrder= inOrder(heatingModule,fan);
+        callOrder.verify(heatingModule).heater(initHeatingSettings);
+        callOrder.verify(fan).isOn();
+        callOrder.verify(heatingModule).grill(properHeatingSettings);
+    }
 }

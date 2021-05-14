@@ -24,15 +24,28 @@ class OvenTest {
     private Oven oven;
     private BakingProgram bakingProgram;
     private ArrayList<ProgramStage> programStages= new ArrayList<>();
-    private HeatingSettings initHeatingSettings;
+    private HeatingSettings initHeatingSettings,properHeatingSettings;
+
+    private int initialTemp= 100;
+    private int initialTime= 0;
+    private int targetTemp= 200;
+    private int targetTime= 100;
+
+    OvenTest() {
+    }
 
     @BeforeEach
     void setUp() throws Exception{
         this.oven=new Oven(heatingModule,fan);
         initHeatingSettings = HeatingSettings.builder()
-                .withTargetTemp(100)
-                .withTimeInMinutes(0)
+                .withTargetTemp(initialTemp)
+                .withTimeInMinutes(initialTime)
                 .build();
+        properHeatingSettings= HeatingSettings.builder()
+                .withTargetTemp(targetTemp)
+                .withTimeInMinutes(targetTime)
+                .build();
+        bakingProgram= BakingProgram.builder().withInitialTemp(100).withStages(programStages).build();
     }
 
     @Test
@@ -42,12 +55,7 @@ class OvenTest {
 
     @Test
     void oneProgramStageHeatingTypeSetToHeat() throws HeatingException {
-        programStages.add(ProgramStage.builder().withStageTime(100).withTargetTemp(200).withHeat(HeatType.HEATER).build());
-        bakingProgram= BakingProgram.builder().withInitialTemp(100).withStages(programStages).build();
-        HeatingSettings properHeatingSettings= HeatingSettings.builder()
-                .withTargetTemp(200)
-                .withTimeInMinutes(100)
-                .build();
+        programStages.add(ProgramStage.builder().withStageTime(targetTime).withTargetTemp(targetTemp).withHeat(HeatType.HEATER).build());
 
 
         oven.start(bakingProgram);
@@ -59,13 +67,7 @@ class OvenTest {
 
     @Test
     void oneProgramStageHeatingTypeSetToGrill() throws HeatingException{
-        programStages.add(ProgramStage.builder().withStageTime(100).withTargetTemp(200).withHeat(HeatType.GRILL).build());
-        bakingProgram= BakingProgram.builder().withInitialTemp(100).withStages(programStages).build();
-
-        HeatingSettings properHeatingSettings= HeatingSettings.builder()
-                .withTargetTemp(200)
-                .withTimeInMinutes(100)
-                .build();
+        programStages.add(ProgramStage.builder().withStageTime(targetTime).withTargetTemp(targetTemp).withHeat(HeatType.GRILL).build());
 
         oven.start(bakingProgram);
         InOrder callOrder= inOrder(heatingModule,fan);
@@ -76,13 +78,7 @@ class OvenTest {
 
     @Test
     void oneProgramStageHeatingTypeSetToThermoCirculation() throws HeatingException{
-        programStages.add(ProgramStage.builder().withStageTime(100).withTargetTemp(200).withHeat(HeatType.THERMO_CIRCULATION).build());
-        bakingProgram= BakingProgram.builder().withInitialTemp(100).withStages(programStages).build();
-
-        HeatingSettings properHeatingSettings= HeatingSettings.builder()
-                .withTargetTemp(200)
-                .withTimeInMinutes(100)
-                .build();
+        programStages.add(ProgramStage.builder().withStageTime(targetTime).withTargetTemp(targetTemp).withHeat(HeatType.THERMO_CIRCULATION).build());
 
         oven.start(bakingProgram);
         InOrder callOrder= inOrder(heatingModule,fan);

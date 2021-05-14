@@ -73,4 +73,22 @@ class OvenTest {
         callOrder.verify(fan).isOn();
         callOrder.verify(heatingModule).grill(properHeatingSettings);
     }
+
+    @Test
+    void oneProgramStageHeatingTypeSetToThermoCirculation() throws HeatingException{
+        programStages.add(ProgramStage.builder().withStageTime(100).withTargetTemp(200).withHeat(HeatType.THERMO_CIRCULATION).build());
+        bakingProgram= BakingProgram.builder().withInitialTemp(100).withStages(programStages).build();
+
+        HeatingSettings properHeatingSettings= HeatingSettings.builder()
+                .withTargetTemp(200)
+                .withTimeInMinutes(100)
+                .build();
+
+        oven.start(bakingProgram);
+        InOrder callOrder= inOrder(heatingModule,fan);
+        callOrder.verify(heatingModule).heater(initHeatingSettings);
+        callOrder.verify(fan).on();
+        callOrder.verify(heatingModule).termalCircuit(properHeatingSettings);
+        callOrder.verify(fan).off();
+    }
 }
